@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Google Sheet</title>
+
+</head>
+
+<body>
+    <h1>Google Sheet Loader</h1>
+    <p>Testing...</p>
+</body>
+<script src="loadSheet.js"></script>
+<script>
+    const id = "1mSjbAORDq8HxoWT10a220onnIJYiVEGNK5j2PZnEVYE";
+    const newDataSheet = new GoogleSheet(id);
+
+    let data = newDataSheet.load();
+    data.then(data => displayData(data));
+
+    // newDataSheet.load(displayData);
+
+    function displayData(data) {
+        console.log('data', data);
+    }
+</script>
+</html>
