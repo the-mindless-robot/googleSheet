@@ -15,10 +15,14 @@
     const id = "1mSjbAORDq8HxoWT10a220onnIJYiVEGNK5j2PZnEVYE";
     const newDataSheet = new GoogleSheet(id);
 
-    let data = newDataSheet.load();
-    data.then(data => displayData(data));
+    // let data = newDataSheet.load();
+    // data.then(data => displayData(data));
 
-    // newDataSheet.load(displayData);
+    //const options = {
+    //     start: 1,
+    //     end: 1
+    // }
+    newDataSheet.load(displayData);
 
     function displayData(data) {
         console.log('data', data);
