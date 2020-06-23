@@ -6,29 +6,22 @@ class GoogleSheet {
         const sheet = {};
         let moreData;
         let sheetNumber = options && options.hasOwnProperty('start') ? options.start : 1;
-        let sheetNumberEnd = options && options.hasOwnProperty('end') ? options.end : false;
+        const sheetNumberEnd = options && options.hasOwnProperty('end') ? options.end : false;
         do {
             moreData = false;
-            let url = 'https://spreadsheets.google.com/feeds/list/' + this.id + '/' + sheetNumber + '/public/values?alt=json';
+            const url = 'https://spreadsheets.google.com/feeds/list/' + this.id + '/' + sheetNumber + '/public/values?alt=json';
 
-            let response = await fetch(url);
+            const response = await fetch(url);
             // console.log('response', response);
             console.log(`sheet${sheetNumber} ${response.status}`);
-            let data = response.status == 200 ? await response.json() : false;
+            const data = response.status == 200 ? await response.json() : false;
 
             if(data) {
-                let sheetName = await getSheetName(data);
-                let rows = await buildRows(data);
+                const sheetName = await getSheetName(data);
+                const rows = await buildRows(data);
                 sheet[sheetName] = rows;
-            }
 
-            if(!sheetNumberEnd) {
-                if(data) {
-                    sheetNumber++;
-                    moreData = true;
-                }
-            } else {
-                if(sheetNumber != sheetNumberEnd && data) {
+                if(!sheetNumberEnd || sheetNumber != sheetNumberEnd) {
                     sheetNumber++;
                     moreData = true;
                 }
