@@ -17,8 +17,8 @@ class GoogleSheet {
             const data = response.status == 200 ? await response.json() : false;
 
             if(data) {
-                const sheetName = await getSheetName(data);
-                const rows = await buildRows(data);
+                const sheetName = getSheetName(data);
+                const rows = buildRows(data);
                 sheet[sheetName] = rows;
 
                 if(!sheetNumberEnd || sheetNumber != sheetNumberEnd) {
@@ -36,7 +36,7 @@ class GoogleSheet {
     }
 }
 
-async function buildRows(data) {
+function buildRows(data) {
 
     const rows = [];
 
@@ -59,6 +59,6 @@ async function buildRows(data) {
     return rows;
 }
 
-async function getSheetName(data) {
+function getSheetName(data) {
     return  data.feed.title.$t.toLowerCase().trim();
 }
