@@ -1,70 +1,72 @@
 class GoogleSheet {
-    constructor(id) {
-        this.id = id;
-    }
-    async load(callback = false, options = false) {
-        const sheet = {};
-        let moreData;
-        let sheetNumber = options && options.hasOwnProperty('start') ? options.start : 1;
-        const sheetNumberEnd = options && options.hasOwnProperty('end') ? options.end : false;
-        const APIkey = 'xxxx';
+	constructor(id) {
+		this.id = id;
+	}
 
-        do {
-            moreData = false;
-            const v4 = 'https://sheets.googleapis.com/v4/spreadsheets/' + this.id + '/values/Sheet' + sheetNumber + '?key='+ APIkey;
+	async load(callback = false, options = false) {
+		const sheet = {};
+		let moreData;
+		let sheetNumber = options && options.hasOwnProperty('start') ? options.start : 1;
+		const sheetNumberEnd = options && options.hasOwnProperty('end') ? options.end : false;
+		const APIkey = 'xxxxx';
 
-            const response = await fetch(v4);
-            // console.log('response', response);
+		do {
+			moreData = false;
+			const v4 = 'https://sheets.googleapis.com/v4/spreadsheets/' + this.id + '/values/Sheet' + sheetNumber + '?key='+ APIkey;
 
-            const data = response.status == 200 ? await response.json() : false;
+			const response = await fetch(v4);
+			// console.log('response', response);
 
-            if(data) {
+			const data = response.status == 200 ? await response.json() : false;
 
-                const rows = buildRowsV4(data);
-                sheet[`sheet${sheetNumber}`] = rows;
+			if(data) {
 
-                if(!sheetNumberEnd || sheetNumber != sheetNumberEnd) {
-                    sheetNumber++;
-                    moreData = true;
-                }
-            }
-        }
-        while (moreData);
+				const rows = this._buildRowsV4(data);
+				sheet[`sheet${sheetNumber}`] = rows;
 
-        if(callback && typeof callback == 'function') {
-           return callback(sheet);
-        }
-        return sheet;
-    }
-}
+				if(!sheetNumberEnd || sheetNumber != sheetNumberEnd) {
+					sheetNumber++;
+					moreData = true;
+				}
+			}
+		}
+		while (moreData);
 
-function buildRowsV4(data) {
-    const rows = [];
+		if(callback && typeof callback == 'function') {
+			return callback(sheet);
+		}
+		return sheet;
+	}
 
-    if(data.values) {
+	_buildRowsV4(data) {
+		const rows = [];
 
-        const labels = data.values[0];
+		if(data.values) {
 
-        for(let row=1; row < data.values.length; row++) {
-            const rowObj = {};
+			const labels = data.values[0];
 
-            const rowValues = data.values[row];
+			for(let row=1; row < data.values.length; row++) {
+				const rowObj = {};
 
-            for(let i=0; i < labels.length; i++) {
-                const label = removeSpaces(labels[i].trim().toLowerCase());
-                const value = rowValues[i].trim() ?? '';
+				const rowValues = data.values[row];
 
-//                 console.debug(`${label} : ${value}`);
-                rowObj[label] = value;
-//                 console.debug('rowObj', rowObj);
-            }
-            rows.push(rowObj)
-        }
-    }
+				for(let i=0; i < labels.length; i++) {
+					const label = this._removeSpaces(labels[i].trim().toLowerCase());
+					const value = rowValues[i].trim() ?? '';
 
-    return rows;
-}
+					//                 console.debug(`${label} : ${value}`);
+					rowObj[label] = value;
+					//                 console.debug('rowObj', rowObj);
+				}
+				rows.push(rowObj)
+			}
+		}
 
-function removeSpaces(string) {
-	return string.replace(/\s+/g, '')
+		return rows;
+	}
+
+	_removeSpaces(string) {
+		return string.replace(/\s+/g, '')
+	}
+
 }
