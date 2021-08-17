@@ -52,7 +52,7 @@ function buildRowsV4(data) {
 
             for(let i=0; i < labels.length; i++) {
                 const label = removeSpaces(labels[i].trim().toLowerCase());
-                const value = rowValues[i] ?? '';
+                const value = rowValues[i].trim() ?? '';
 
 //                 console.debug(`${label} : ${value}`);
                 rowObj[label] = value;
