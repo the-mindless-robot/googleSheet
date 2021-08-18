@@ -11,7 +11,8 @@ class GoogleSheet {
 		console.debug('titles', sheetTitles);
 
 		for(const title of sheetTitles) {
-			const url = 'https://sheets.googleapis.com/v4/spreadsheets/' + this.id + '/values/' + title + '?key='+ APIkey;
+			const encodedTitle = encodeURIComponent(title);
+			const url = 'https://sheets.googleapis.com/v4/spreadsheets/' + this.id + '/values/' + encodedTitle + '?key='+ APIkey;
 			const data = await this._requestData(url);
 			if(data) {
 				const rows = this._buildRowsV4(data);
