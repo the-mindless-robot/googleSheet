@@ -10,10 +10,13 @@
     <h1>Google Sheet Loader</h1>
     <p>Testing...</p>
 </body>
+<script src="config.js"></script>
 <script src="GoogleSheet.js"></script>
+
 <script>
-    const id = "1bqR1pptjhnncw0voagc3PXMwkgK4W1NQFT4H4Yo0NHg";
-    const newDataSheet = new GoogleSheet(id);
+    const id = config.testSheet;
+    const elac = config.elacSheet;
+    const newDataSheet = new GoogleSheet(elac);
 
     // let data = newDataSheet.load();
     // data.then(data => displayData(data));
