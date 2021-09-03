@@ -61,7 +61,7 @@ class GoogleSheet {
 				const rowValues = data.values[row];
 
 				for(let i=0; i < labels.length; i++) {
-					const label = this._removeSpaces(labels[i].trim().toLowerCase());
+					const label = this._removeSpecialCharsAndSpaces(labels[i].trim().toLowerCase());
 					const value = rowValues[i]?.trim() ?? '';
 
 					//                 console.debug(`${label} : ${value}`);
@@ -77,6 +77,10 @@ class GoogleSheet {
 
 	_removeSpaces(string) {
 		return string.replace(/\s+/g, '')
+	}
+
+	_removeSpecialCharsAndSpaces(string) {
+		return string.replace(/[^\w]/g, '')
 	}
 
 }
