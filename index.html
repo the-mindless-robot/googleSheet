@@ -15,20 +15,31 @@
 
 <script>
     const id = config.testSheet;
-    const elac = config.elacSheet;
-    const newDataSheet = new GoogleSheet(config.programs);
+    const key = config.apiKey
 
-    // let data = newDataSheet.load();
-    // data.then(data => displayData(data));
-
-    //const options = {
-    //     start: 1,
-    //     end: 1
-    // }
-    newDataSheet.load(displayData);
-
-    function displayData(data) {
-        console.log('data', data);
+    const parseData = (data) => {
+        // parse sheet(s)
+        return data;
     }
+
+    const loadSheet = async (a, b, callback, title = false) => {
+            const sheet = new Sheet(a, b);
+            const sheetData = await sheet.load({
+                callback: callback,
+                showTitles: true,
+                sheetTitles: Sheet.parseSheetTitles(title)
+            });
+            return sheetData;
+        };
+
+    const run = async () => {
+        const sheetData = await loadSheet(id, key, parseData);
+        console.log(sheetData);
+    }
+
+    run();
+
+
+
 </script>
 </html>

@@ -1,86 +1,124 @@
-class GoogleSheet {
-	constructor(id) {
-		this.id = id;
-	}
+class Sheet {
+  constructor(a, b) {
+    this.a = a;
+    this.b = b;
+  }
 
-	async load(callback = false) {
-		const sheet = {};
+  async load(options = false) {
+    const sheet = {};
 
-		const APIkey = config.apiKey;
-		const sheetTitles = await this._getSheetTitles(APIkey);
-		console.debug('titles', sheetTitles);
+    const sheetTitles = options?.sheetTitles
+      ? options.sheetTitles
+      : await this._getSheetTitles();
 
-		for(const title of sheetTitles) {
-			const encodedTitle = encodeURIComponent(title);
-			const url = 'https://sheets.googleapis.com/v4/spreadsheets/' + this.id + '/values/' + encodedTitle + '?key='+ APIkey;
-			const data = await this._requestData(url);
-			if(data) {
-				const rows = this._buildRowsV4(data);
-				sheet[title] = rows;
-			}
-		}
+    if (options?.hasOwnProperty("showTitles") && options.showTitles) {
+      console.debug("titles provided", sheetTitles);
+      const availableSheets = await this._getSheetTitles();
+      console.debug("available sheets", availableSheets);
+    }
 
-		if(callback && typeof callback == 'function') {
-			return callback(sheet);
-		}
-		return sheet;
-	}
+    for (const title of sheetTitles) {
+      const url = this._buildUrl(title, this.b);
+      const data = await this._requestData(url);
+      if (data) {
+        const rows = this._buildRowsV4(data);
+        sheet[this._removeSpecialCharsAndSpaces(title).toLowerCase()] = rows;
+      }
+    }
 
-	async _requestData(url) {
-		const response = await fetch(url);
-		const data = response.status == 200 ? await response.json() : false;
-		return data;
-	}
+    if (
+      options?.hasOwnProperty("callback") &&
+      typeof options.callback == "function"
+    ) {
+      return options.callback(sheet);
+    }
+    return sheet;
+  }
 
-	async _getSheetTitles(APIkey) {
-		const sheets = [];
-		const url = 'https://sheets.googleapis.com/v4/spreadsheets/' + this.id + '/?key='+ APIkey;
-		const data = await this._requestData(url);
+  _buildUrl(title) {
+    const encodedTitle = encodeURIComponent(title);
+    const url =
+      "https://sheets.googleapis.com/v4/spreadsheets/" +
+      this.a +
+      "/values/" +
+      encodedTitle +
+      "?key=" +
+      this.b;
 
-		if(data) {
-			for(const sheet of data.sheets) {
-				sheets.push(sheet.properties.title);
-			}
-			return sheets;
-		}
+    return url;
+  }
 
-		return false;
+  async _requestData(url) {
+    const response = await fetch(url);
+    const data = response.status == 200 ? await response.json() : false;
+    return data;
+  }
 
-	}
+  async _getSheetTitles() {
+    const sheets = [];
+    const url =
+      "https://sheets.googleapis.com/v4/spreadsheets/" +
+      this.a +
+      "/?key=" +
+      this.b;
+    const data = await this._requestData(url);
 
-	_buildRowsV4(data) {
-		const rows = [];
+    if (data) {
+      for (const sheet of data.sheets) {
+        sheets.push(sheet.properties.title);
+      }
+      return sheets;
+    }
 
-		if(data.values) {
+    return false;
+  }
 
-			const labels = data.values[0];
+  _buildRowsV4(data) {
+    const rows = [];
 
-			for(let row=1; row < data.values.length; row++) {
-				const rowObj = {};
+    if (data.values) {
+      const labels = data.values[0];
 
-				const rowValues = data.values[row];
+      for (let row = 1; row < data.values.length; row++) {
+        const rowObj = {};
 
-				for(let i=0; i < labels.length; i++) {
-					const label = this._removeSpecialCharsAndSpaces(labels[i].trim().toLowerCase());
-					const value = rowValues[i]?.trim() ?? '';
+        const rowValues = data.values[row];
 
-					//                 console.debug(`${label} : ${value}`);
-					rowObj[label] = value;
-					//                 console.debug('rowObj', rowObj);
-				}
-				rows.push(rowObj)
-			}
-		}
+        for (let i = 0; i < labels.length; i++) {
+          const label = this._removeSpecialCharsAndSpaces(
+            labels[i].trim().toLowerCase()
+          );
+          const value = rowValues[i]?.trim() ?? "";
 
-		return rows;
-	}
+          //                 console.debug(`${label} : ${value}`);
+          rowObj[label] = value;
+          //                 console.debug('rowObj', rowObj);
+        }
+        rows.push(rowObj);
+      }
+    }
 
-	_removeSpaces(string) {
-		return string.replace(/\s+/g, '')
-	}
+    return rows;
+  }
 
-	_removeSpecialCharsAndSpaces(string) {
-		return string.replace(/[^\w]/g, '')
-	}
+  _removeSpaces(string) {
+    return string.replace(/\s+/g, "");
+  }
 
+  _removeSpecialCharsAndSpaces(string) {
+    return string.replace(/[^\w]/g, "");
+  }
+
+  static parseSheetTitles(titles) {
+    if (titles) {
+      const allTitles = titles.split(",");
+      const titlesArray = [];
+      for (const title of allTitles) {
+        titlesArray.push(title.trim());
+      }
+      return titlesArray;
+    }
+
+    return false;
+  }
 }
