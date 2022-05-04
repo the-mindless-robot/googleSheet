@@ -89,10 +89,7 @@ class Sheet {
             labels[i].trim().toLowerCase()
           );
           const value = rowValues[i]?.trim() ?? "";
-
-          //                 console.debug(`${label} : ${value}`);
           rowObj[label] = value;
-          //                 console.debug('rowObj', rowObj);
         }
         rows.push(rowObj);
       }
